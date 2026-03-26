@@ -32,8 +32,8 @@
     --text-main: #ffffff;
     --text-muted: #a3a3a3;
     --border-color: #262626;
-    --primary-color: #afcbd5;
-    --primary-hover: #c4dbe4;
+    --primary-color: #38bdf8;
+    --primary-hover: #7dd3fc;
     --secondary-bg: #262626;
     --secondary-hover: #404040;
     --error-bg: #7f1d1d;
@@ -90,6 +90,13 @@ body {
     gap: 0.75rem;
     color: var(--primary-color);
     font-size: 1.25rem;
+}
+
+.logo img {
+    height: 48px;
+    width: 48px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
 }
 
 .logo h1 {
