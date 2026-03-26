@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RawJson - Universal Data Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-database"></i>
+                <h1>RawJson</h1>
+            </div>
+            
+            <div class="tool-nav">
+                <button class="tool-btn active" data-tool="raw-to-json"><i class="fas fa-file-code"></i> Text → JSON</button>
+                <button class="tool-btn" data-tool="json-to-table"><i class="fas fa-table"></i> JSON → Table</button>
+                <button class="tool-btn" data-tool="sql-playground"><i class="fas fa-terminal"></i> SQL Playground</button>
+            </div>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Left Pane: Input -->
+            <section class="pane input-pane">
+                <div class="pane-header">
+                    <h2 id="input-title">Input: Raw Data</h2>
+                    <div class="actions">
+                        <button id="sample-data-btn" class="secondary-btn btn-sm"><i class="fas fa-magic"></i> Sample Data</button>
+                        <button id="clear-btn" class="secondary-btn btn-sm"><i class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                
+                <div class="file-upload-container">
+                    <label for="file-upload" class="file-upload-btn">
+                        <i class="fas fa-upload"></i> Upload Source File
+                    </label>
+                    <input type="file" id="file-upload" accept=".txt,.csv,.json" hidden>
+                    <span id="file-name" class="file-name">No file chosen (.txt, .csv, .json)</span>
+                </div>
+
+                <div class="textarea-wrapper" id="primary-input-wrapper">
+                    <textarea id="raw-input" placeholder="Paste your raw data, key:value pairs, CSV, or malformed JSON here..."></textarea>
+                </div>
+                
+                <div class="textarea-wrapper hidden" id="sql-input-wrapper" style="border-top: 1px solid var(--border-color); flex-basis: 150px; flex-grow: 0; display:flex; flex-direction:column;">
+                    <div style="padding: 0.5rem; font-size: 0.75rem; color: var(--text-muted); background:var(--secondary-bg);">
+                        <i class="fas fa-info-circle"></i> Source data is loaded into table <strong>data</strong>. Write your SELECT query below.
+                    </div>
+                    <textarea id="sql-input" placeholder="SELECT * FROM data LIMIT 10;" style="flex:1; border:none; border-top:1px solid var(--border-color); border-radius:0;"></textarea>
+                </div>
+                
+                <div class="convert-actions">
+                    <button id="action-btn" class="primary-btn"><i class="fas fa-rocket"></i> Convert to JSON</button>
+                </div>
+            </section>
+
+            <!-- Right Pane: Output -->
+            <section class="pane output-pane">
+                <div class="pane-header">
+                    <h2>Output</h2>
+                    <div class="tabs">
+                        <button class="tab-btn active" data-target="json-view"><i class="fas fa-brackets-curly"></i> JSON</button>
+                        <button class="tab-btn" data-target="table-view"><i class="fas fa-table"></i> Table</button>
+                        <button class="tab-btn" id="history-tab-btn" data-target="history-view"><i class="fas fa-history"></i> History</button>
+                    </div>
+                </div>
+                
+                <div class="output-content-wrapper">
+                    <div id="loading-spinner" class="hidden loading-overlay">
+                        <div class="spinner"></div>
+                        <p>Processing...</p>
+                    </div>
+                    
+                    <div id="error-message" class="hidden error-toast"></div>
+
+                    <div id="json-view" class="view-content active">
+                        <pre><code id="json-output" class="language-json">Output will appear here...</code></pre>
+                    </div>
+                    
+                    <div id="table-view" class="view-content hidden">
+                        <div id="table-output" class="table-responsive">Table will appear here...</div>
+                    </div>
+                    
+                    <div id="history-view" class="view-content hidden">
+                        <div id="history-output" class="table-responsive">History will appear here...</div>
+                    </div>
+                </div>
+                
+                <div class="output-actions">
+                    <button id="copy-btn" class="secondary-btn"><i class="fas fa-copy"></i> Copy</button>
+                    <button id="download-json-btn" class="secondary-btn"><i class="fas fa-download"></i> JSON</button>
+                    <button id="download-csv-btn" class="secondary-btn"><i class="fas fa-file-csv"></i> CSV</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
