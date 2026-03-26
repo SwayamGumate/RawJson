@@ -158,6 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function runConversion(endpoint, targetView) {
         showLoading();
         errorMessage.classList.add('hidden');
+        if (targetView === 'json-view') jsonOutput.textContent = '';
+        if (targetView === 'table-view') tableOutput.innerHTML = '';
         
         const formData = new FormData();
         const textData = rawInput.value.trim();
@@ -204,6 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function runSQL() {
         showLoading();
         errorMessage.classList.add('hidden');
+        jsonOutput.textContent = '';
+        tableOutput.innerHTML = '';
         const textData = rawInput.value.trim();
         const queryText = sqlInput.value.trim();
 

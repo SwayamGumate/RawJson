@@ -35,22 +35,41 @@ def raw_to_json(raw_text):
             pass
     
     # 3. Try parsing Key: Value lines (e.g. key: value)
-    lines = raw_text.split('\n')
-    kv_result = {}
-    is_kv = False
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        if ':' in line:
-            parts = line.split(':', 1)
-            key = parts[0].strip().strip('"').strip("'")
-            val = parts[1].strip().strip('"').strip("'").strip(',')
-            kv_result[key] = val
-            is_kv = True
+    # Detect if there are multiple objects separated by '---' or double newlines
+    blocks = re.split(r'\n\s*-{3,}\s*\n', raw_text)
+    if len(blocks) == 1:
+        blocks = re.split(r'\n\s*\n', raw_text)
+        
+    all_results = []
     
-    if is_kv and len(kv_result) > 0:
-        return kv_result
+    for block in blocks:
+        lines = block.split('\n')
+        kv_result = {}
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            if ':' in line:
+                parts = line.split(':', 1)
+                key = parts[0].strip().strip('"').strip("'")
+                val = parts[1].strip().strip('"').strip("'").strip(',')
+                
+                if val.isdigit():
+                    val = int(val)
+                elif val.replace('.','',1).isdigit() and val.count('.') == 1:
+                    val = float(val)
+                elif val.lower() == "true":
+                    val = True
+                elif val.lower() == "false":
+                    val = False
+
+                kv_result[key] = val
+        
+        if kv_result:
+            all_results.append(kv_result)
+            
+    if all_results:
+        return all_results if len(all_results) > 1 else all_results[0]
     
     # 4. Try parsing malformed JS object (missing quotes around keys)
     try:

@@ -53,10 +53,17 @@ def convert_json_to_table():
             file = request.files['file']
             if file.filename != '':
                 content = file.read().decode('utf-8')
-                data = json.loads(content)
+                try:
+                    data = json.loads(content)
+                except json.JSONDecodeError:
+                    data = raw_to_json(content)
                 
         if not data and 'data' in request.form:
-             data = json.loads(request.form.get('data'))
+            raw_input = request.form.get('data')
+            try:
+                data = json.loads(raw_input)
+            except json.JSONDecodeError:
+                data = raw_to_json(raw_input)
                 
         if not data:
             return jsonify({"error": "No JSON data provided."}), 400
