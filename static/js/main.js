@@ -78,17 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Tab Switching ---
     tabBtns.forEach(btn => {
-        btn.addEventListener('click', async () => {
+        btn.addEventListener('click', () => {
             tabBtns.forEach(b => b.classList.remove('active'));
             views.forEach(v => v.classList.add('hidden'));
             
             btn.classList.add('active');
             const target = btn.getAttribute('data-target');
             document.getElementById(target).classList.remove('hidden');
-            
-            if (target === 'history-view') {
-                await loadHistory();
-            }
         });
     });
 
@@ -281,40 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tableOutput.innerHTML = html;
     }
 
-    // --- History Loading ---
-    async function loadHistory() {
-        const historyOutput = document.getElementById('history-output');
-        showLoading();
-        try {
-            const response = await fetch('/api/history');
-            if (!response.ok) throw new Error('Failed to load history');
-            const records = await response.json();
-            
-            if (records.length === 0) {
-                historyOutput.innerHTML = '<p style="padding:1rem;color:var(--text-muted)">No conversions found.</p>';
-                return;
-            }
-            
-            let html = '<table class="data-table"><thead><tr><th>ID</th><th>Type</th><th>Time</th><th>Preview</th><th>Status</th></tr></thead><tbody>';
-            records.forEach(r => {
-                let safePreview = (r.data_preview || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-                html += `<tr>
-                    <td>${r.id}</td>
-                    <td><span class="badge ${r.conversion_type === 'Raw to JSON' ? 'badge-primary' : 'badge-secondary'}">${r.conversion_type}</span></td>
-                    <td style="white-space:nowrap">${r.timestamp}</td>
-                    <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${safePreview}">${safePreview}</td>
-                    <td><span class="${r.status === 'Success' ? 'text-success' : 'text-error'}">${r.status}</span></td>
-                </tr>`;
-            });
-            html += '</tbody></table>';
-            historyOutput.innerHTML = html;
-        } catch (error) {
-            historyOutput.innerHTML = `<p style="padding:1rem;color:var(--error-text)">${error.message}</p>`;
-        } finally {
-            hideLoading();
-        }
-    }
-
     // --- Actions ---
     copyBtn.addEventListener('click', () => {
         const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-target');
@@ -322,15 +284,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (activeTab === 'json-view') {
             textToCopy = jsonOutput.textContent;
-        } else {
-            const table = document.getElementById(activeTab === 'table-view' ? 'table-output' : 'history-output').querySelector('table');
+        } else if (activeTab === 'table-view') {
+            const table = document.getElementById('table-output').querySelector('table');
             if (table) {
                 const rows = Array.from(table.querySelectorAll('tr'));
                 textToCopy = rows.map(row => Array.from(row.querySelectorAll('th, td')).map(c => c.innerText).join('\t')).join('\n');
             }
         }
         
-        if (textToCopy && textToCopy !== 'Output will appear here...' && textToCopy !== 'Table will appear here...' && textToCopy !== 'History will appear here...') {
+        if (textToCopy && textToCopy !== 'Output will appear here...' && textToCopy !== 'Table will appear here...') {
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
